@@ -1,0 +1,51 @@
+body {
+    padding-top: 50px;
+    text-indent: 40px;
+}
+
+footer {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    text-align: center;
+    color: black;
+}
+.milieu{
+    text-align: center;
+}
+
+.eloigne{
+    padding-top: 50px;
+}
+
+.mustMove{
+    margin: 3em;
+}
+
+#dropdownUl{
+    background-color: lightblue;
+
+}
+
+#categories{
+    position: absolute;
+    padding-left: 0px;
+    width: 9.5em;
+}
+#dropdownJs li a{
+    display: block;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #333;
+    text-decoration: none;
+}
+
+#dropdownJs li{
+    background-color: lightblue;
+    border-color: grey;
+    border-style: dotted;
+}
+
+#dropdownJs li:hover{
+    background-color: lightgrey;
+}

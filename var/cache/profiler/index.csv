@@ -1,0 +1,4 @@
+210239,::1,GET,http://localhost/LudusVisualis/web/index.php/,1461077169,,200
+86fad7,::1,GET,http://localhost/LudusVisualis/web/index.php/login,1461077171,,200
+c805b8,::1,POST,http://localhost/LudusVisualis/web/index.php/login_check,1461077212,,302
+d5643a,::1,GET,http://localhost/LudusVisualis/web/index.php/,1461077212,,500

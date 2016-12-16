@@ -1,0 +1,16 @@
+{% extends "layout.html.twig" %} {% block title %}Categorie{% endblock %} 
+{% block content %}
+{% for game in games %}
+<game>
+    
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-6">
+    <h2><a class="gameName" href="{{ path('game', { 'id': game.id }) }}">{{ game.name }}</a></h2>
+    <p>{{ game.DescriptionShort }}</p>
+                </div>
+            </div>
+        </div>
+</game>
+{% endfor %}
+{% endblock %}

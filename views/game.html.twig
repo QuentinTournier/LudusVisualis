@@ -1,0 +1,41 @@
+{% extends "layout.html.twig" %} 
+{% block title %}{{ game.name }}{% endblock %} 
+{% block content %}
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ app.request.basepath }}/../images/{{ game.image }}" width="400" alt="Mon Image">
+
+
+            <div class="eloigne">
+                {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {% if ordered %}
+                        <div>{{ 'You already ordered that game'|trans }}</div>
+                    {% else %}
+                        <a id="addToBasket" href="{{ path('add_product_basket', {'id' : game.id}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter au panier</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ path('login') }} ">{{ 'Login'|trans }}</a> to add something to your basket.
+                {% endif %}
+            </div>
+
+
+        </div> 
+        <div class="col-md-6">
+            
+            <h2>{{ game.name }}</h2>
+            <p>{{ game.descriptionLong }}</p>
+            <p>{{'Price \:  %price%'|trans({'%price%' : game.price})}}</p>
+            <p>{{'Release Date \:  %releaseDate%'|trans({'%releaseDate%' : game.year})}}</p>
+            <p>{{'Category \:  %category%'|trans({'%category%' : game.type})}}</p>
+            {% set gameNumber = game.number%}
+            <p >{% transchoice gameNumber %}
+                    {0} There are no copy Left|{1} There is one copy left|]1,Inf[ There are %gameNumber% copies left
+                {% endtranschoice %}
+            </p>
+
+        </div>
+
+    </div>
+</div>    
+{% endblock %}

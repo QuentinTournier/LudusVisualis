@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ app.request.basepath }}/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ app.request.basepath }}/css/LudusVisualis.css" rel="stylesheet">
+    <title>LudusVisualis - {% block title %}{% endblock %}</title>
+</head>
+<body>
+    <div class="container">
+         <div class="container">
+                <div class="navbar navbar-default" role="navigation">
+                <!-- Partie de la barre toujours affichée -->
+                <div class="navbar-header">
+                    <!-- Bouton d'accès affiché à droite si la zone d'affichage est trop petite -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-target">
+                        <span class="sr-only">Activer la navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{path('home')}}">LudusVisualis</a>
+                </div>
+                <!-- Partie de la barre masquée si la surface d'affichage est insuffisante -->
+                <div class="collapse navbar-collapse" id="navbar-collapse-target">
+                    <ul id="dropdownUl" class="nav navbar-nav">
+                        <li id="dropdownJs" class="dropdown">
+                            <a>
+                                {{ 'Categories'|trans }}<b class="caret"></b>
+                                <ul id='categories'>
+                                </ul>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <li class="active"><a href="{{ path('basket') }}">Consulter le panier</a></li>
+                            <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span> {{ 'Welcome, %userName%'|trans({'%userName%': app.user.userName}) }} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('userSettings') }}">{{ 'Update/Edit informations'|trans }}</a></li>
+                                    <li><a href="{{ path('logout') }}">{{ 'Sign out'|trans }}</a></li>
+                                </ul>
+                                
+                            </li>
+                        {% else %}
+                            <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span> {{ 'Anonymous'|trans }} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('login') }}">{{ 'Login'|trans }}</a></li>
+                                    <li><a href="{{ path('signup') }}">{{ 'Sign In'|trans }}</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% for flashMessage in app.session.flashbag.get('success') %}
+        <div class="alert alert-success">
+            {{ flashMessage }}
+        </div>
+        {% endfor %}
+
+        
+        <div id="content">{% block content %}{% endblock %}</div>
+        <footer>
+            <p2> Ce site a été réalisé par Tournier Quentin et Geoffroy Hebrard</p2>
+            <script src="{{ app.request.basepath }}/lib/jquery/jquery.min.js"></script>
+            <script src="{{ app.request.basepath }}/lib/bootstrap/js/bootstrap.min.js"></script>
+            <script>
+            $(document).ready(function(){
+                 $.ajax({
+                    url: "{{ url('getCategories') }}",
+                    dataType : 'Json',
+                    success: function(result){
+                        var innerHtml = '';
+                        for (i = 0; i < result.length; i++) {
+                            var newRow = '<li class="hidden dropdownLi">'.concat('<a href="__CATEGORYLINK__" >',result[i], '</a></li>');
+                            var url = "{{path('categorie',{ 'categorie': '__RESULT__'}) }}".replace('__RESULT__',result[i]);
+                            innerHtml += newRow.replace('__CATEGORYLINK__',url);                            
+                        }
+                        $('#categories').prepend(innerHtml);
+                        console.log($('#dropdownJs li'));
+                        $('#dropdownJs li').css('list-style','none');
+                }});
+                $('#dropdownJs').on('click',function(event){
+                    event.preventDefault;
+                    if ( $('#dropdownJs li').hasClass("hidden")){
+                        $('#dropdownJs li').removeClass("hidden");
+                    }
+                    else{
+                         $('#dropdownJs li').addClass("hidden");
+                    }
+                    
+                });
+                
+            })
+        </script>
+        </footer>
+    </div>
+</body>
+</html>
