@@ -1,0 +1,33 @@
+{% extends "layout.html.twig" %} {% block title %}{{ 'Basket'|trans }}{% endblock %} {% block content %}
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>{{'The games you ordered :'|trans}}<br></h2>
+                <div class="well">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>{{ 'Game'|trans }}</th> 
+                            </thead>
+                            <tbody>
+                                {% for game in games %}
+                                    <tr>
+                                        <th> <a class="game" href="{{ path('game', { 'id': game.id }) }}">{{game.name}}</a></th>    
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="userInfos">
+                    <p>{{ 'This is the address you gave us :'|trans }}</p>
+                    <p>{{ user.address }}</p>
+                    <p>{{ user.city }}</p>
+                    <p><a href="{{ url('edit_user') }}">{{ 'Change Address'|trans }}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

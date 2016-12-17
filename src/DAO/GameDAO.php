@@ -37,12 +37,25 @@ class GameDAO extends DAO
 
    }
     
-     /** return the number 
-    *
-    **/
+     /**
+    * removes one from the number of game available
+    * @param Game $game
+    */
        public function removeOne(Game $game) {
         $db = $this->getDb();
         $sql = "UPDATE videogames Set game_number=game_number-1 WHERE game_id = :gameId";
+        $success = $db->prepare($sql)->execute(['gameId'=>$game->getId()]);
+        
+        return $success;
+       }
+    
+    /**
+    * add one to the number of game available
+    * @param Game $game
+    */
+    public function addOne(Game $game) {
+        $db = $this->getDb();
+        $sql = "UPDATE videogames Set game_number=game_number+1 WHERE game_id = :gameId";
         $success = $db->prepare($sql)->execute(['gameId'=>$game->getId()]);
         
         return $success;

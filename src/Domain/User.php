@@ -25,11 +25,6 @@ class User implements UserInterface
      */
     private $password;
     
-    /**
-     * User descriptionLong.
-     *
-     * @var string
-     */
     private $lastName;
     
     /**
@@ -181,6 +176,9 @@ class User implements UserInterface
 
     public function eraseCredentials() {
         // Nothing to do here
-
+    }
+    
+    public function getName(){
+        return $this->userName. '' . $this->lastName;
     }
 }

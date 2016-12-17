@@ -8,8 +8,12 @@ use LudusVisualis\Domain\User;
 use LudusVisualis\Domain\Basket;
 use LudusVisualis\Form\Type\UserType;
 
+
 // Home page
 $app->get('/', function () use ($app) {
+    if($app['user']!== null){
+        $app['session']->set('nbArticles', $app['dao.basket']->findChartSize($app['user']));
+    }
     $games = $app['dao.game']->findAll();
     $consoles = $app['dao.console']->findAllConsoles();
     $consolesData = [];
@@ -44,13 +48,44 @@ $app->get('/console/{consoleId}', function ($consoleId) use ($app) {
 $app->get('/game/{id}', function ($id) use ($app) {
     
     $game = $app['dao.game']->find($id);
-    $user = $app['dao.user']->find($app['user']->getId());
-    $ordered = $app['dao.basket']->existsInBasket($game, $user);
+    $user = $app['user'];
+    if($user === null){
+        $ordered = false;
+    }
+    else{
+        $ordered = $app['dao.basket']->existsInBasket($game, $user);   
+    }
+    if($app['user']!== null){
+        $app['session']->set('nbArticles', $app['dao.basket']->findChartSize($app['user']));
+    }
+    $comments = $app['dao.comment']->getAllCommentsForGame($game);
+    $gameData = ['id'=> $game->getId(),
+                 'name' => $game->getName(),
+                 'descriptionLong' => $game->getDescriptionLong(),
+                 'price' => $game->getPrice(),
+                 'year' => $game->getYear(),
+                 'number' => $game->getNumber(),
+                 'type' => $game->getType()
+                ];
+    
+    $commentsData = [];
+    foreach ($comments as $comment){
+        $userCommenting = $app['dao.user']->find($comment->getUserId());
+        $own = ($userCommenting->getId() === $app['user']->getId());
+        $commentsData []= [
+            'userName' => $userCommenting->getName(),
+            'commentText' => $comment->getCommentText(),
+            'rating' => $comment->getRating(),
+            'own' => $own,
+            'id' => $comment->getId()
+        ];
+    }
     return $app['twig']->render(
         'game.html.twig', [
-            'game' => $game,
+            'game' => $gameData,
             'ordered' =>$ordered,
-            'pathImage' =>IMAGES. "/". $game->getImage()
+            'pathImage' =>IMAGES. "/". $game->getImage(),
+            'comments' => $commentsData
         ]
     );
 })->bind('game');
@@ -143,22 +178,35 @@ $app->match('/userUpdate', function(Request $request) use ($app) {
 
 //Display the basket of the current user
 $app->get('/basket', function () use ($app) {
-    $user = $app['user'];
-    $orders = $app['dao.basket']->findAllByUser($user->getId());
-    return $app['twig']->render('basket.html.twig', array(
-        'orders' => $orders));
+     $user = $app['user'];
+    if($user === null){
+        return new RedirectResponse($app["url_generator"]->generate("home"));
+    }
+    $orders = $app['dao.basket']->findAllByUser($user, Basket::ORDERING);
+    $games= [];
+    foreach($orders as $order){
+        $game = $app['dao.game']->find($order->getGameId());
+        $games[] = ['name' => $game->getName(), 'id' => $game->getId(), 'price'=> $game->getPrice()];
+    }
+    $userParams = ['address' =>$user->getAddress(), 'city' => $user->getCity()];
+    return $app['twig']->render('basket.html.twig', ['games'=>$games, 'userInfos' => $userParams]);
 })->bind('basket');
 
 // add Game to basket
 $app->match('/basket/{id}/add', function($id,Request $request) use ($app) {
+    if($app['user'] === null){
+        return new RedirectResponse($app["url_generator"]->generate("home"));
+    }
     if(!$app['dao.basket']->existsInBasket($app['dao.game']->find($id),$app['user'])){
-        $app['dao.basket']->addInBasket($app['dao.game']->find($id),$app['user']);
+        $app['dao.basket']->addInBasket($app['dao.game']->find($id),$app['user'], $app['dao.game']);
+    }
+    if($app['user']!== null){
+        $app['session']->set('nbArticles', $app['dao.basket']->findChartSize($app['user']));
     }
     
     $app['session']->getFlashBag()->add('success', 'The game has been succesfully added into the basket');
     // Redirect to product page
     $game = $app['dao.game']->find($id);
-    $app['dao.game']->removeOne($game);
     return new RedirectResponse($app["url_generator"]->generate("home"));
 })->bind('add_product_basket');
 
@@ -166,8 +214,10 @@ $app->match('/basket/{id}/add', function($id,Request $request) use ($app) {
 $app->get('/deleteFrombasket/{gameId}', function ($gameId) use ($app) {
     $user = $app['user'];
     $game = $app['dao.game']->find($gameId);
-    $app['dao.basket']->deleteOrder($game, $user); 
-    $app['session']->getFlashBag()->add('success', 'The game has been successfully deleted from the basket');
+    $success = $app['dao.basket']->deleteOrder($game, $user,$app['dao.game']); 
+    if($success){
+        $app['session']->getFlashBag()->add('success', 'The game has been successfully deleted from the basket');
+    }
     return new RedirectResponse($app["url_generator"]->generate("basket"));
 })->bind('deleteOrder');
 
@@ -180,3 +230,54 @@ $app->get('/getCategories', function () use ($app) {
     }
     return new JSONResponse($categoryArray);
 })->bind('getCategories');
+
+//Order the basket
+$app->get('/Basket/Order', function() use ($app){
+    $user = $app['user'];
+    $app['dao.basket']->orderBasket($user);
+    
+    return new RedirectResponse($app["url_generator"]->generate("summary"));
+})->bind('order');
+
+//See what we have ordered
+$app->get('/Basket/Summary', function() use ($app){
+    $user = $app['user'];
+    if($user === null){
+        return new RedirectResponse($app["url_generator"]->generate("home"));
+    }
+    $orders = $app['dao.basket']->findAllByUser($user, Basket::ORDERED);
+    $games = [];
+    foreach($orders as $order){
+        $game = $app['dao.game']->find($order->getGameId());
+        $games[] = ['id' => $game->getId(), 'name' => $game->getName()];
+    }
+    $userParams = ['address' =>$user->getAddress(), 'city' => $user->getCity()];
+    return $app['twig']->render('summary.html.twig', ['games' => $games, 'user' => $userParams]);
+})->bind('summary');
+
+
+$app->match('Game/{gameId}/Rate', function(Request $request, $gameId) use ($app){
+    $rating = $request->request->get('rating');
+    $comment = $request->request->get('comment');
+    $rating = ($rating == -1 ? null : $rating);
+    $userId = $app['user']->getId();
+    $params = [
+        'rating'=>$rating,
+        'userId' => $userId,
+        'commentText' => $comment,
+        'gameId' => $gameId
+    ];
+    $success = $app['dao.comment']->saveComment($params);
+    
+    return new RedirectResponse($app["url_generator"]->generate("game", ['id'=>$gameId]));
+    
+})->bind('rateCommentGame');
+
+$app->get('Game/{gameId}/RemoveComment/{commentId}', function($commentId, $gameId)use ($app){
+    $comment = $app['dao.comment']->loadComment($commentId);
+    $app['dao.comment']->removeComment($comment);
+
+     return new RedirectResponse($app["url_generator"]->generate("game", ['id'=>$gameId]));
+    
+})->bind('removeComment');
+    

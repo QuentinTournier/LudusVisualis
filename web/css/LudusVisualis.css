@@ -18,7 +18,7 @@ footer {
 }
 
 .mustMove{
-    margin: 3em;
+    margin-left: 15em;
 }
 
 #dropdownUl{
@@ -44,6 +44,8 @@ footer {
     background-color: lightblue;
     border-color: grey;
     border-style: dotted;
+    position: relative;
+    z-index: +1;
 }
 
 #dropdownJs li:hover{
@@ -86,4 +88,51 @@ footer {
     border-radius: 50%;
     float: right;
     opacity: 0.8;
+}
+
+#userInfos{
+    margin-top: 8em;
+}
+
+.spaced{
+    padding: 1em 0em; 
+}
+
+#commentUserName{
+    font-size: 9px;
+}
+
+.comment{
+    margin: 2em 0em; 
+}
+
+.textComment{
+    margin-bottom: 2em;
+}
+
+textarea {
+    resize: none;
+}
+
+#star-rating .gold{
+    color: darkgoldenrod;
+}
+
+#buttonComment{
+    height: 4.25em;
+}
+
+.starShort{
+    width: 1em;
+}
+
+.removeComment{
+    float:right;
+    padding-top: 0.25em;
+    padding-right: 0.5em;
+    cursor: pointer;
+}
+
+.commentUserName{
+    border: dashed lightgrey;
 }

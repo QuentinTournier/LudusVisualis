@@ -6,7 +6,7 @@
     <h2 id="accountSettingsTitle">{{ block('title') }}</h2>
 
         <form id="settingsForm" action="{{ url('profile_update') }}" method="post">
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="firstName">{{ 'First Name'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="firstName" value="{{ app.user.userName }}" data-validation="length alphanumeric" data-validation-length="min1"></div>
@@ -15,7 +15,7 @@
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="lastName">{{ 'Last Name'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="lastName" value="{{ app.user.userLastName }}"></div>
@@ -24,7 +24,7 @@
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="email">{{ 'Email'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="email" value="{{ app.user.email }}"></div>
@@ -33,7 +33,7 @@
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="address">{{ 'Address'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="address" value="{{ app.user.address }}"></div>
@@ -42,7 +42,7 @@
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="city">{{ 'City'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="city" value="{{ app.user.city }}"></div>
@@ -51,7 +51,7 @@
                     {% endif %}
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group spaced">
                     <label class="col-md-3" for="zip">{{ 'Zip Code'|trans }}</label>
                     {% if edit is defined %}
                         <div class="col-md-9"><input class="form-control" name="zip" value="{{ app.user.zip }}"></div>
@@ -59,11 +59,16 @@
                         <p class="col-md-9">{{ app.user.zip }}</p>
                     {% endif %}
                 </div>
-
+            
             {% if edit is defined %}
-                <input class="btn btn-default mustMove" type="submit" value="{{ 'Edit informations'|trans }}" />
+                <div class="spaced">
+                    <button class="btn btn-default mustMove" type="submit" value="">
+                        {{ 'Save informations'|trans }}
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
             {% else %}
-                <a class="mustMove" href="{{ url('edit_user') }}">{{ 'Edit informations'|trans }}</a>
+                <a class="mustMove" href="{{ url('edit_user') }}"><span class="glyphicon glyphicon-edit"></span>{{ 'Edit informations'|trans }}</a>
             {% endif %}
 
         </form>

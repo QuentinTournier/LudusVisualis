@@ -38,11 +38,12 @@
                     
                     <ul class="nav navbar-nav navbar-right">
                         {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') %}
-                            <li class="active"><a href="{{ path('basket') }}">Consulter le panier</a></li>
+                            <li class="active"><a href="{{ path('basket') }}">{{ 'See cart'|trans }}<span class="glyphicon glyphicon-shopping-cart"></span>{% if app.session.get('nbArticles') > 0 %}{{ app.session.get('nbArticles') }}{% endif %}</a></li>
                             <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <span class="glyphicon glyphicon-user"></span> {{ 'Welcome, %userName%'|trans({'%userName%': app.user.userName}) }} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="{{ path('summary') }}">{{ 'View previous commands'|trans }}</a></li>
                                     <li><a href="{{ path('userSettings') }}">{{ 'Update/Edit informations'|trans }}</a></li>
                                     <li><a href="{{ path('logout') }}">{{ 'Sign out'|trans }}</a></li>
                                 </ul>
@@ -71,7 +72,7 @@
         
         <div id="content">{% block content %}{% endblock %}</div>
         <footer>
-            <p2> Ce site a été réalisé par Tournier Quentin et Geoffroy Hebrard</p2>
+            <p> {{ 'This site have been realised by Quentin Tournier'|trans }}</p>
             <script src="{{ app.request.basepath }}/lib/jquery/jquery.min.js"></script>
             <script src="{{ app.request.basepath }}/lib/bootstrap/js/bootstrap.min.js"></script>
             <script>
@@ -87,7 +88,6 @@
                             innerHtml += newRow.replace('__CATEGORYLINK__',url);                            
                         }
                         $('#categories').prepend(innerHtml);
-                        console.log($('#dropdownJs li'));
                         $('#dropdownJs li').css('list-style','none');
                 }});
                 $('#dropdownJs').on('click',function(event){
@@ -102,6 +102,8 @@
                 });
                 
             })
+            {% block js %}
+            {% endblock %}
         </script>
         </footer>
     </div>

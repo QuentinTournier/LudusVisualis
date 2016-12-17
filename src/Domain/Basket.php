@@ -2,25 +2,24 @@
 namespace LudusVisualis\Domain;
 class Basket 
 {
-    
-    /**
-     * Basket id.
-     *
-     * @var integer
-     */
+    const ORDERED= 'ordered';
+    const ORDERING = 'ordering';
+    const DELIVERED = 'delivered';
+ 
     private $id;
     
     private $userId;
     
     private $gameId;
     
-    private $quantity;
+    private $state;
     
     public function getId() {
         return $this->id;
     }
     public function setId($id) {
         $this->id = $id;
+        return $this;
     }
 
     public function getUserId() {
@@ -28,6 +27,7 @@ class Basket
     }
     public function setUserid($userId) {
         $this->userId = $userId;
+        return $this;
     }
     
     public function getGameId() {
@@ -35,6 +35,16 @@ class Basket
     }
     public function setGameId($gameId) {
         $this->gameId = $gameId;
+        return $this;
+    }
+    
+    public function getState(){
+        return $this->state;
+    }
+    
+    public function setState($state){
+        $this->state = $state;
+        return $this;
     }
    
 }

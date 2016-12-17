@@ -10,13 +10,44 @@
             <div class="eloigne">
                 {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') %}
                     {% if ordered %}
-                        <div>{{ 'You already ordered that game'|trans }}</div>
+                        <div class="alert alert-info">{{ 'You ordered that game'|trans }}</div>
                     {% else %}
-                        <a id="addToBasket" href="{{ path('add_product_basket', {'id' : game.id}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter au panier</a>
+                        <a id="addToBasket" href="{{ path('add_product_basket', {'id' : game.id}) }}"><span class="glyphicon glyphicon-plus"></span> {{ 'Add to basket'|trans }}</a>
                     {% endif %}
                 {% else %}
-                    <a href="{{ path('login') }} ">{{ 'Login'|trans }}</a> to add something to your basket.
+                    <a href="{{ path('login') }} ">{{ 'Login here'|trans }}</a> to add something to your basket.
                 {% endif %}
+            </div>
+            <div class="comments">
+                <form action="{{ url('rateCommentGame',{gameId : game.id}) }}" method="post">
+                    <div id="star-rating" class="col-md-12"> 
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <input type="hidden" id="note" value="-1" name="rating">
+                        <button id="resetRating" class="hidden btn btn-default" style="margin-left :1em">{{ 'resetRating'|trans }}</button>
+                    </div>
+                    <textarea rows="2" class="col-md-11 textComment" name="comment" placeholder="{{ 'Add a comment'|trans }}"></textarea>
+                    <button id="buttonComment" class="btn btn-default col-md-1" type="submit" value="">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </form>
+                {% for comment in comments%}
+                     <div class="comment col-md-12">
+                        <p id="{{'comment' ~ comment.id}}" class="commentUserName">{{ comment.userName }}
+                            {% if comment.rating is not null%}
+                                {% for i in range(1, comment.rating) %}
+                                    <span class="glyphicon glyphicon-star starShort"></span>
+                                {% endfor %}
+                            {% endif %}
+                            {% if comment.own %}<span class="glyphicon glyphicon-remove removeComment"></span> {% endif%}
+                         </p>
+                            
+                        <div>{{ comment.commentText }}</div>
+                    </div>
+                {% endfor %}
             </div>
 
 
@@ -38,4 +69,27 @@
 
     </div>
 </div>    
+{% endblock %}
+{% block js %}
+    $('#star-rating span').on('mouseenter',function(){
+        $(this).addClass('gold');
+        $(this).prevAll().addClass('gold');
+        $(this).nextAll().removeClass('gold');
+        var note = $(this).prevAll().length
+        $('#note').val(parseInt(note) +1);
+        $('#resetRating').removeClass('hidden');
+    });
+
+    $('#resetRating').on('click', function(e){
+        e.preventDefault();
+        $('#star-rating span').removeClass('gold');
+        $('#note').val(-1);
+    });
+
+    $('.removeComment').on('click', function(){
+        var id = $(this).closest('.commentUserName').prop('id').replace('comment','');
+        var url = "{{ url('removeComment', {gameId : game.id, commentId : '_COMMENTID_'}) }}".replace('_COMMENTID_',id);
+        window.location.href = url;
+    })
+
 {% endblock %}

@@ -39,3 +39,8 @@ INSERT INTO GameHasConsole Values(2,2);
 INSERT INTO GameHasConsole Values(3,3);
 INSERT INTO GameHasConsole Values(4,2);
 INSERT INTO GameHasConsole Values(5,1);
+
+
+INSERT INTO Comments values (1,1,3,null,'Je pense que ce jeu est bien');
+INSERT INTO Comments values (2,1,2,4,'Ce jeu est génial, j\'ai passé des supers moment en y jouant');
+INSERT INTO Comments values (3,2,3,2,'Ce jeu a des défauts');

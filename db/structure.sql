@@ -37,7 +37,7 @@ create table Basket (
     basket_id integer not null primary key auto_increment,
     user_id integer not null,
     game_id integer not null,
-    bas_quantity integer not null,
+    state varchar(20) not null,
     constraint fk_bas_usr foreign key(user_id) references Users(user_id),
     constraint fk_bas_game foreign key(game_id) references VideoGames(game_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
@@ -58,4 +58,14 @@ create table GameHasConsole(
     constraint fk_game foreign key(game_id) references VideoGames(game_id),
     constraint fk_console foreign key(console_id) references Console(id),
     primary key(game_id, console_id)
+) engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table Comments(
+    id integer not null primary key auto_increment,
+    user_id integer not null,
+    game_id integer not null,
+    rating integer,
+    comment_text varchar(300) not null,
+    constraint fk_has_user foreign key(user_id) references Users(user_id),
+    constraint fk_for_game foreign key(game_id) references VideoGames(game_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;

@@ -58,5 +58,9 @@ $app['dao.console'] = $app->share(function ($app) {
     return new LudusVisualis\DAO\ConsoleDAO($app['db']);
 });
 
+$app['dao.comment'] = $app->share(function ($app) {
+    return new LudusVisualis\DAO\CommentDAO($app['db']);
+});
+
 
 define('IMAGES', '/LudusVisualis/images');

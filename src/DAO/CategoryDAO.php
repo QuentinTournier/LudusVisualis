@@ -19,8 +19,8 @@ class CategoryDAO extends DAO
     
     
      protected function buildDomainObject(array $row) {
-        $basket = new Category();
-        $basket->setName($row['category_name']);
-        return $basket;
+        $category = new Category();
+        $category->setName($row['category_name']);
+        return $category;
     }
 }
