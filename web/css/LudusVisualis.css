@@ -78,4 +78,12 @@ footer {
 #consoleName{
     font-size: 8em;
     vertical-align: middle;
+    padding-left: 0.5em;
+}
+
+.img-circle {
+    width: 15em;
+    border-radius: 50%;
+    float: right;
+    opacity: 0.8;
 }

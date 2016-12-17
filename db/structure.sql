@@ -45,6 +45,7 @@ create table Basket (
 create table Console (
     id integer not null primary key auto_increment,
     name varchar(50) not null,
+    short_name varchar(6) not null,
     price integer not null,
     description varchar(2000),
     developer varchar(50),

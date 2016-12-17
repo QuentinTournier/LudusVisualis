@@ -5,6 +5,10 @@ class Console
 
     private $id;
     private $name;
+    private $shortName;
+    private $desctipion;
+    private $price;
+    private $developer;
     
     public function getName(){
         return $this->name;
@@ -14,6 +18,13 @@ class Console
         return $this;
     }
     
+    public function getShortName(){
+        return $this->shortName;
+    }
+    public function setShortName($shortName){
+        $this->shortName = $shortName;
+        return $this;
+    }
     
     public function getId(){
         return $this->id;

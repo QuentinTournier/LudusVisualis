@@ -40,6 +40,7 @@ class ConsoleDAO extends DAO
         $console = new Console();
         $console->setId($row['id'])
         ->setName($row['name'])
+        ->setShortName($row['short_name'])
         ->setPrice($row['price'])
         ->setDescription($row['description'])
         ->setDeveloper($row['developer'])

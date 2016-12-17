@@ -30,7 +30,7 @@
             <p>{{'Category \:  %category%'|trans({'%category%' : game.type})}}</p>
             {% set gameNumber = game.number%}
             <p >{% transchoice gameNumber %}
-                    {0} There are no copy Left|{1} There is one copy left|]1,Inf[ There are %gameNumber% copies left
+                    {0} There are no copies Left|{1} There is one copy left|]1,Inf[ There are %gameNumber% copies left
                 {% endtranschoice %}
             </p>
 

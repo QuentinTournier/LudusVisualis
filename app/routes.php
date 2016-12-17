@@ -16,7 +16,7 @@ $app->get('/', function () use ($app) {
     foreach($consoles as $console){
         $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
     }
-    return $app['twig']->render('index.html.twig', ['games' => $games, 'consoles' =>$consolesData]);
+    return $app['twig']->render('index.html.twig', ['games' => $games, 'consoles' =>$consolesData, 'imagePath' => IMAGES]);
 })->bind('home');
 
 // Home page, filtered by console
@@ -34,7 +34,8 @@ $app->get('/console/{consoleId}', function ($consoleId) use ($app) {
         'games' => $games,
         'consoles' =>$consolesData,
         'pathImage' => $pathImage,
-        'consoleName' => $console->getName()
+        'consoleShortName' => $console->getShortName(),
+        'imagePath' => IMAGES
         ]
     );
 })->bind('console');
@@ -62,7 +63,7 @@ $app->get('/categorie/{categorie}', function ($categorie) use ($app) {
     foreach($consoles as $console){
         $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
     }
-    return $app['twig']->render('index.html.twig', array('games' => $games,'consoles' => $consolesData));
+    return $app['twig']->render('index.html.twig', array('games' => $games,'consoles' => $consolesData, 'imagePath' => IMAGES));
 })->bind('categorie');
 
 // Login form

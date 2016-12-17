@@ -1,29 +1,27 @@
-{% extends "layout.html.twig" %} {% block title %}Panier{% endblock %} {% block content %}
+{% extends "layout.html.twig" %} {% block title %}{{ 'Basket'|trans }}{% endblock %} {% block content %}
 <div class="jumbotron">
         <div class="row">
             <div class="col-md-6">
-                <h2>Votre panier<br></h2>
+                <h2>{{'Your Basket'|trans}}<br></h2>
                 <div class="well">
-                                <div class="form-group">
-                                    <table class="table table-striped">
-                                        <tbody>
-                                            <tr>
-                                                <th>{{ 'Game'|trans }}</th> 
-                                                <th>{{ 'Price(€)'|trans }}</th>
-                                                <th>{{ 'Action'|trans }}</th>
-                                            </tr>
-                {% for order in orders %}
-                        <game>
-                                <tr>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>{{ 'Game'|trans }}</th> 
+                                <th>{{ 'Price(€)'|trans }}</th>
+                                <th>{{ 'Action'|trans }}</th>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                    <tr>
                                         <th> <a class="game" href="{{ path('game', { 'id': order.game_id }) }}">{{order.game_name}}</a></th> 
                                         <th>{{order.game_price}}</th>
                                         <th> 
                                             <a href="{{ path('deleteOrder', { 'gameId': order.game_id }) }}" type="button" class="btn-danger btn-sm glyphicon glyphicon-remove-sign red"></a>
                                         </th>   
-                                </tr>
-                        </game>
-                {% endfor %}
-                                         </tbody>
+                                    </tr>
+                                {% endfor %}
+                        </tbody>
                 </table>
             </div>
         </div>
