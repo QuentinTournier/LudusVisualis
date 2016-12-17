@@ -41,3 +41,20 @@ create table Basket (
     constraint fk_bas_usr foreign key(user_id) references Users(user_id),
     constraint fk_bas_game foreign key(game_id) references VideoGames(game_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table Console (
+    id integer not null primary key auto_increment,
+    name varchar(50) not null,
+    price integer not null,
+    description varchar(2000),
+    developer varchar(50),
+    image varchar(50)
+) engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table GameHasConsole(
+    game_id integer not null,
+    console_id integer not null,
+    constraint fk_game foreign key(game_id) references VideoGames(game_id),
+    constraint fk_console foreign key(console_id) references Console(id),
+    primary key(game_id, console_id)
+) engine=innodb character set utf8 collate utf8_unicode_ci;

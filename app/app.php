@@ -4,6 +4,7 @@ use Symfony\Component\Debug\ExceptionHandler;
 // Register global error and exception handlers
 ErrorHandler::register();
 ExceptionHandler::register();
+
 // Register service providers
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
@@ -53,3 +54,9 @@ $app['dao.category'] = $app->share(function ($app) {
     return new LudusVisualis\DAO\CategoryDAO($app['db']);
 });
 
+$app['dao.console'] = $app->share(function ($app) {
+    return new LudusVisualis\DAO\ConsoleDAO($app['db']);
+});
+
+
+define('IMAGES', '/LudusVisualis/images');

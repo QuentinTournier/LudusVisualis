@@ -3,9 +3,9 @@
 {% block title %}{{ 'Account settings'|trans }}{% endblock %}
 
 {% block content %}
-    <h2 class="text-center">{{ block('title') }}</h2>
+    <h2 id="accountSettingsTitle">{{ block('title') }}</h2>
 
-        <form action="{{ url('profile_update') }}" method="post">
+        <form id="settingsForm" action="{{ url('profile_update') }}" method="post">
                 <div class="form-group">
                     <label class="col-md-3" for="firstName">{{ 'First Name'|trans }}</label>
                     {% if edit is defined %}

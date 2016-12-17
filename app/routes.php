@@ -11,8 +11,33 @@ use LudusVisualis\Form\Type\UserType;
 // Home page
 $app->get('/', function () use ($app) {
     $games = $app['dao.game']->findAll();
-    return $app['twig']->render('index.html.twig', array('games' => $games));
+    $consoles = $app['dao.console']->findAllConsoles();
+    $consolesData = [];
+    foreach($consoles as $console){
+        $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
+    }
+    return $app['twig']->render('index.html.twig', ['games' => $games, 'consoles' =>$consolesData]);
 })->bind('home');
+
+// Home page, filtered by console
+$app->get('/console/{consoleId}', function ($consoleId) use ($app) {
+    $games = $app['dao.game']->getAllGamesFromConsole($consoleId);
+    $consoles = $app['dao.console']->findAllConsoles();
+    $consolesData = [];
+    foreach($consoles as $console){
+        $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
+    }
+    $console = $app['dao.console']->findConsole($consoleId);
+    $pathImage = IMAGES ."/" . $console->getImage();
+    
+    return $app['twig']->render('index.html.twig', [
+        'games' => $games,
+        'consoles' =>$consolesData,
+        'pathImage' => $pathImage,
+        'consoleName' => $console->getName()
+        ]
+    );
+})->bind('console');
 
 //Display a game
 $app->get('/game/{id}', function ($id) use ($app) {
@@ -20,14 +45,24 @@ $app->get('/game/{id}', function ($id) use ($app) {
     $game = $app['dao.game']->find($id);
     $user = $app['dao.user']->find($app['user']->getId());
     $ordered = $app['dao.basket']->existsInBasket($game, $user);
-    return $app['twig']->render('game.html.twig', array('game' => $game, 'ordered' =>$ordered));
-
+    return $app['twig']->render(
+        'game.html.twig', [
+            'game' => $game,
+            'ordered' =>$ordered,
+            'pathImage' =>IMAGES. "/". $game->getImage()
+        ]
+    );
 })->bind('game');
 
 //Display a category
 $app->get('/categorie/{categorie}', function ($categorie) use ($app) {
     $games = $app['dao.game']->findAllFromCategorie($categorie);
-    return $app['twig']->render('categorie.html.twig', array('games' => $games));
+    $consoles = $app['dao.console']->findAllConsoles();
+    $consolesData = [];
+    foreach($consoles as $console){
+        $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
+    }
+    return $app['twig']->render('index.html.twig', array('games' => $games,'consoles' => $consolesData));
 })->bind('categorie');
 
 // Login form

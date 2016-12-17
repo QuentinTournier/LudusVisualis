@@ -49,3 +49,33 @@ footer {
 #dropdownJs li:hover{
     background-color: lightgrey;
 }
+#dropdownUl{
+    cursor: pointer;
+}
+
+#settingsForm label{
+    text-align: right;
+}
+
+#accountSettingsTitle{
+    margin-left :6em;
+    margin-bottom: 1em;
+}
+
+#consoleDropdown{
+    display: block;
+    text-decoration: none;
+    margin-bottom: 1em;
+    float: right;
+}
+
+#consoleImage{
+    height: 13em;
+    width: auto;
+    padding-bottom: 2em;
+}
+
+#consoleName{
+    font-size: 8em;
+    vertical-align: middle;
+}

@@ -4,6 +4,7 @@ namespace LudusVisualis\DAO;
 
 use Doctrine\DBAL\Connection;
 use LudusVisualis\Domain\Game;
+use LudusVisualis\Domain\Console;
 
 class GameDAO extends DAO
 {
@@ -28,13 +29,13 @@ class GameDAO extends DAO
     /** return all the categories
     *
     **/
-       public function findAllCategories() {
-        $sql = "select game_type from VideoGames ";
-        $result = $this->getDb()->fetchAll($sql);
+   public function findAllCategories() {
+    $sql = "select game_type from VideoGames ";
+    $result = $this->getDb()->fetchAll($sql);
 
-           return $result;
-            
-       }
+       return $result;
+
+   }
     
      /** return the number 
     *
@@ -73,6 +74,24 @@ returns all the games from a categorie
             return $this->buildDomainObject($row);
         else
             throw new \Exception("No article matching id " . $id);
+    }
+    
+    /**
+    *
+    * @param Console object, console
+    * @return, an array of game object
+    */
+    
+    public function getAllGamesFromConsole($consoleId)
+    {
+        $stmt = $this->getDb()->prepare('SELECT game_id FROM GameHasConsole WHERE console_id = :consoleId');
+        $stmt->execute(['consoleId'=> $consoleId]);
+        $rows = $stmt->fetchAll();
+        $games = [];
+        foreach($rows as $row){
+            $games[] =  $this->find($row['game_id']);
+        }
+        return $games;
     }
     
 
