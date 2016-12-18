@@ -179,6 +179,6 @@ class User implements UserInterface
     }
     
     public function getName(){
-        return $this->userName. '' . $this->lastName;
+        return $this->userName. ' ' . $this->lastName;
     }
 }

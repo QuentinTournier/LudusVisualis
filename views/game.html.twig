@@ -56,7 +56,7 @@
             
             <h2>{{ game.name }}</h2>
             <p>{{ game.descriptionLong }}</p>
-            <p>{{'Price \:  %price%'|trans({'%price%' : game.price})}}</p>
+            <p>{{'Price \:  %price% €'|trans({'%price%' : game.price})}}</p>
             <p>{{'Release Date \:  %releaseDate%'|trans({'%releaseDate%' : game.year})}}</p>
             <p>{{'Category \:  %category%'|trans({'%category%' : game.type})}}</p>
             {% set gameNumber = game.number%}
