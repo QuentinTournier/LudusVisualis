@@ -1,18 +1,33 @@
+
+drop table if exists Game_has_console;
 drop table if exists VideoGames;
+drop table if exists VideoGames_has_translation;
 drop table if exists Users;
 drop table if exists Categories;
+drop table if exists Categories_has_translation;
+drop table if exists Comments;
+drop table if exists Basket;
+drop table if exists Console;
+drop table if exists Console_has_translation;
 
 create table VideoGames (
     game_id integer not null primary key auto_increment,
     game_name varchar(100) not null,
-    game_description_short varchar(500) not null,
-    game_description_long varchar(2000) not null,
     game_author varchar(150) not null,
     game_year integer not null,
     game_image varchar(100) not null,
-    game_type varchar(100) not null,
     game_price integer not null,
-    game_number integer not null
+    game_number integer not null,
+    game_type integer not null
+) engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table VideoGames_has_translation (
+    game_id integer not null,
+    `language` varchar(10) not null, 
+    game_description_short varchar(500) not null,
+    game_description_long varchar(2000) not null,
+    primary key (`language`, game_id),
+    constraint fk_trans_game foreign key(game_id) references VideoGames(game_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
 
@@ -30,7 +45,15 @@ create table Users (
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
 create table Categories(
-    category_name varchar(100) not null primary key
+    id integer not null primary key auto_increment
+)engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table Categories_has_Translation(
+    cat_id integer not null,
+    cat_language varchar(10) not null,
+    cat_name varchar(20),
+    primary key(cat_id, cat_language),
+    constraint categories_trans foreign key(cat_id) references Categories(id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
 create table Basket (
@@ -44,15 +67,22 @@ create table Basket (
 
 create table Console (
     id integer not null primary key auto_increment,
-    name varchar(50) not null,
-    short_name varchar(6) not null,
     price integer not null,
-    description varchar(2000),
     developer varchar(50),
     image varchar(50)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
-create table GameHasConsole(
+create table Console_has_translation (
+    console_id integer not null,
+    `language` varchar(10) not null,
+    name varchar(50) not null,
+    short_name varchar(6) not null,
+    description varchar(2000),
+    constraint fk_from_console foreign key(console_id) references Console(id),
+    primary key(`language`, console_id)
+) engine=innodb character set utf8 collate utf8_unicode_ci;
+
+create table Game_has_console(
     game_id integer not null,
     console_id integer not null,
     constraint fk_game foreign key(game_id) references VideoGames(game_id),

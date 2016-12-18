@@ -4,11 +4,7 @@
 
 {% block content %}
 <h2 class="text-center">{{ block('title') }}</h2>
-{% for flashMessage in app.session.flashbag.get('success') %}
-<div class="alert alert-success">
-    {{ flashMessage }}
-</div>
-{% endfor %}
+
 {% if form_errors(userForm.password.first) %}
 <div class="alert alert-danger">
     {{ form_errors(userForm.password.first) }}
@@ -18,7 +14,7 @@
 {{ form_start(userForm, { 'attr': {'class': 'form-horizontal'} }) }}
     <div class="form-group">
         <div class="col-sm-5 control-label">
-            Nom
+            {{'Last name'|trans}}
         </div>
         <div class="col-sm-4">
             {{ form_errors(userForm.userlastname) }}
@@ -30,7 +26,7 @@
     
     <div class="form-group">
         <div class="col-sm-5 control-label">
-            Prénom
+            {{'First name'|trans}}
         </div>
         <div class="col-sm-4">
             {{ form_errors(userForm.username) }}
@@ -41,18 +37,18 @@
     </div>  
     <div class="form-group">
         <div class="col-sm-5 control-label">
-            Adresse
+            {{'Address'|trans}}
         </div>
         <div class="col-sm-4">
-            {{ form_errors(userForm.adress) }}
-            {{ form_widget(userForm.adress, { 'attr':  {
+            {{ form_errors(userForm.address) }}
+            {{ form_widget(userForm.address, { 'attr':  {
                 'class': 'form-control'
             }}) }}
         </div>
     </div> 
     <div class="form-group">
         <div class="col-sm-5 control-label">
-            Code Postal
+            {{'Zip code'|trans}}
         </div>
         <div class="col-sm-4">
             {{ form_errors(userForm.zip) }}
@@ -63,7 +59,7 @@
     </div> 
         <div class="form-group">
         <div class="col-sm-5 control-label">
-            Ville
+            {{'City'|trans}}
         </div>
         <div class="col-sm-4">
             {{ form_errors(userForm.city) }}
@@ -74,7 +70,7 @@
     </div> 
         <div class="form-group">
         <div class="col-sm-5 control-label">
-            Courriel
+            {{'Email'|trans}}
         </div>
         <div class="col-sm-4">
             {{ form_errors(userForm.email) }}
@@ -84,9 +80,9 @@
         </div>
     </div> 
     
-    <div class="form-group">
+    <div id="password" class="form-group">
         {{ form_label(userForm.password.first, null, { 'label_attr':  {
-            'class': 'col-sm-5 control-label'
+            'class': 'col-sm-5 control-label',
         }}) }}
         <div class="col-sm-4">
             {{ form_widget(userForm.password.first, { 'attr':  {
@@ -94,7 +90,7 @@
             }}) }}
         </div>
     </div>
-    <div class="form-group">
+    <div  id="passwordConfirm" class="form-group">
         {{ form_label(userForm.password.second, null, { 'label_attr':  {
             'class': 'col-sm-5 control-label'
         }}) }}
@@ -117,9 +113,22 @@
     </div>
     <div class="form-group">
         <div class="col-sm-offset-5 col-sm-3">
-            <input type="submit" class="btn btn-primary" value="S'inscrire" />
+            <input type="submit" class="btn btn-primary" value="{{ 'Sign up'|trans }}" />
         </div>
     </div>
 {{ form_end(userForm) }}
 </div>
+{% endblock %}
+{% block js %}
+    //Bad manner to change the text, but best way found here
+    $(document).ready(function(){
+        var locale ="{{ app.locale }}";
+        if(locale == 'fr_FR'){
+            $('#password label').text('Mot de passe');
+            $('#passwordConfirm label').text('Mot de passe (Confirmation)');
+            $('#user_role option').eq(0).text('Utilisateur');
+        }
+        
+    });
+    
 {% endblock %}

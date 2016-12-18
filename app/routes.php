@@ -14,8 +14,8 @@ $app->get('/', function () use ($app) {
     if($app['user']!== null){
         $app['session']->set('nbArticles', $app['dao.basket']->findChartSize($app['user']));
     }
-    $games = $app['dao.game']->findAll();
-    $consoles = $app['dao.console']->findAllConsoles();
+    $games = $app['dao.game']->findAll(_LOCALE);
+    $consoles = $app['dao.console']->findAllConsoles(_LOCALE);
     $consolesData = [];
     foreach($consoles as $console){
         $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
@@ -25,13 +25,13 @@ $app->get('/', function () use ($app) {
 
 // Home page, filtered by console
 $app->get('/console/{consoleId}', function ($consoleId) use ($app) {
-    $games = $app['dao.game']->getAllGamesFromConsole($consoleId);
-    $consoles = $app['dao.console']->findAllConsoles();
+    $games = $app['dao.game']->getAllGamesFromConsole($consoleId, _LOCALE);
+    $consoles = $app['dao.console']->findAllConsoles(_LOCALE);
     $consolesData = [];
     foreach($consoles as $console){
         $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
     }
-    $console = $app['dao.console']->findConsole($consoleId);
+    $console = $app['dao.console']->findConsole($consoleId, _LOCALE);
     $pathImage = IMAGES ."/" . $console->getImage();
     
     return $app['twig']->render('index.html.twig', [
@@ -47,7 +47,7 @@ $app->get('/console/{consoleId}', function ($consoleId) use ($app) {
 //Display a game
 $app->get('/game/{id}', function ($id) use ($app) {
     
-    $game = $app['dao.game']->find($id);
+    $game = $app['dao.game']->find($id, _LOCALE);
     $user = $app['user'];
     if($user === null){
         $ordered = false;
@@ -67,11 +67,16 @@ $app->get('/game/{id}', function ($id) use ($app) {
                  'number' => $game->getNumber(),
                  'type' => $game->getType()
                 ];
-    
+    $connected = ($app['user'] == null) ? false : true;
     $commentsData = [];
     foreach ($comments as $comment){
         $userCommenting = $app['dao.user']->find($comment->getUserId());
-        $own = ($userCommenting->getId() === $app['user']->getId());
+        if ($app['user'] === null){
+            $own = false;
+        }
+        else{
+            $own = ($userCommenting->getId() === $app['user']->getId());
+        }
         $commentsData []= [
             'userName' => $userCommenting->getName(),
             'commentText' => $comment->getCommentText(),
@@ -85,15 +90,16 @@ $app->get('/game/{id}', function ($id) use ($app) {
             'game' => $gameData,
             'ordered' =>$ordered,
             'pathImage' =>IMAGES. "/". $game->getImage(),
-            'comments' => $commentsData
+            'comments' => $commentsData,
+            'connected' => $connected,
         ]
     );
 })->bind('game');
 
 //Display a category
 $app->get('/categorie/{categorie}', function ($categorie) use ($app) {
-    $games = $app['dao.game']->findAllFromCategorie($categorie);
-    $consoles = $app['dao.console']->findAllConsoles();
+    $games = $app['dao.game']->findAllFromCategorie($categorie, _LOCALE);
+    $consoles = $app['dao.console']->findAllConsoles(_LOCALE);
     $consolesData = [];
     foreach($consoles as $console){
         $consolesData[] = ['name'=>$console->getName(), 'id'=> $console->getId()];
@@ -127,6 +133,8 @@ $app->get('/signup', function(Request $request) use ($app) {
         $user->setRole("ROLE_USER");
         $app['dao.user']->save($user);
         $app['session']->getFlashBag()->add('success', 'The user was successfully created.');
+        
+        return new RedirectResponse($app["url_generator"]->generate("login"));
     }
     return $app['twig']->render('signup.html.twig', array(
         'title' => 'New user',
@@ -185,7 +193,7 @@ $app->get('/basket', function () use ($app) {
     $orders = $app['dao.basket']->findAllByUser($user, Basket::ORDERING);
     $games= [];
     foreach($orders as $order){
-        $game = $app['dao.game']->find($order->getGameId());
+        $game = $app['dao.game']->find($order->getGameId(), _LOCALE);
         $games[] = ['name' => $game->getName(), 'id' => $game->getId(), 'price'=> $game->getPrice()];
     }
     $userParams = ['address' =>$user->getAddress(), 'city' => $user->getCity()];
@@ -197,8 +205,8 @@ $app->match('/basket/{id}/add', function($id,Request $request) use ($app) {
     if($app['user'] === null){
         return new RedirectResponse($app["url_generator"]->generate("home"));
     }
-    if(!$app['dao.basket']->existsInBasket($app['dao.game']->find($id),$app['user'])){
-        $app['dao.basket']->addInBasket($app['dao.game']->find($id),$app['user'], $app['dao.game']);
+    if(!$app['dao.basket']->existsInBasket($app['dao.game']->find($id, _LOCALE),$app['user'])){
+        $app['dao.basket']->addInBasket($app['dao.game']->find($id, _LOCALE),$app['user'], $app['dao.game']);
     }
     if($app['user']!== null){
         $app['session']->set('nbArticles', $app['dao.basket']->findChartSize($app['user']));
@@ -206,14 +214,14 @@ $app->match('/basket/{id}/add', function($id,Request $request) use ($app) {
     
     $app['session']->getFlashBag()->add('success', 'The game has been succesfully added into the basket');
     // Redirect to product page
-    $game = $app['dao.game']->find($id);
+    $game = $app['dao.game']->find($id, _LOCALE);
     return new RedirectResponse($app["url_generator"]->generate("home"));
 })->bind('add_product_basket');
 
 //Delete an order
 $app->get('/deleteFrombasket/{gameId}', function ($gameId) use ($app) {
     $user = $app['user'];
-    $game = $app['dao.game']->find($gameId);
+    $game = $app['dao.game']->find($gameId, _LOCALE);
     $success = $app['dao.basket']->deleteOrder($game, $user,$app['dao.game']); 
     if($success){
         $app['session']->getFlashBag()->add('success', 'The game has been successfully deleted from the basket');
@@ -224,9 +232,9 @@ $app->get('/deleteFrombasket/{gameId}', function ($gameId) use ($app) {
 //Get all categories
 $app->get('/getCategories', function () use ($app) {
     $categoryArray = [];
-    $categories = $app['dao.category']->getAllCategories();
+    $categories = $app['dao.category']->getAllCategories(_LOCALE);
     foreach($categories as $category){
-        $categoryArray[] = $category->getName();
+        $categoryArray[] = ['name' => $category->getName(), 'id' => $category->getId()];
     }
     return new JSONResponse($categoryArray);
 })->bind('getCategories');
@@ -248,7 +256,7 @@ $app->get('/Basket/Summary', function() use ($app){
     $orders = $app['dao.basket']->findAllByUser($user, Basket::ORDERED);
     $games = [];
     foreach($orders as $order){
-        $game = $app['dao.game']->find($order->getGameId());
+        $game = $app['dao.game']->find($order->getGameId(), _LOCALE);
         $games[] = ['id' => $game->getId(), 'name' => $game->getName()];
     }
     $userParams = ['address' =>$user->getAddress(), 'city' => $user->getCity()];
@@ -280,4 +288,11 @@ $app->get('Game/{gameId}/RemoveComment/{commentId}', function($commentId, $gameI
      return new RedirectResponse($app["url_generator"]->generate("game", ['id'=>$gameId]));
     
 })->bind('removeComment');
+
+$app->match('ChangeLanguage/{language}/Redirect/{redirectUrl}',function($redirectUrl, $language) use ($app){
+    $app['session']->set('UserLanguage', $language);
+    //redirect url was modified to be passe, we revert the changes
+    $trueRedirectUrl = str_replace('--','/', $redirectUrl);
+    return new RedirectResponse($trueRedirectUrl);
+})->bind('changeLanguage');
     

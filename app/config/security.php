@@ -1,4 +1,5 @@
 <?php
+
 $container->loadFromExtension('security', array(
     'providers' => array(
         'our_db_provider' => array(
@@ -9,3 +10,4 @@ $container->loadFromExtension('security', array(
         ),
     ),
 ));
+

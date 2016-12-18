@@ -35,8 +35,21 @@
                             </a>
                         </li>
                     </ul>
+                   
                     
+                    {% set key = AVAILABLE_LANGUAGES[app.request.locale].twoLetters %}
                     <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="{{ IMAGES ~'/' ~ key ~ '.png' }}" width="20" alt="Mon Image"> {{ 'Language'|trans }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                {% for key,language in AVAILABLE_LANGUAGES %}
+                                    {% set redirectUrl = path(app.request.attributes.get('_route'), 
+                                    app.request.attributes.get('_route_params'))|replace({'/' : '--'}) %}
+                                    <li><a href="{{ url('changeLanguage',{language : key, redirectUrl : redirectUrl}) }}">{{ language.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% if app.user and is_granted('IS_AUTHENTICATED_FULLY') %}
                             <li class="active"><a href="{{ path('basket') }}">{{ 'See cart'|trans }}<span class="glyphicon glyphicon-shopping-cart"></span>{% if app.session.get('nbArticles') > 0 %}{{ app.session.get('nbArticles') }}{% endif %}</a></li>
                             <li class="dropdown">
@@ -44,7 +57,7 @@
                                 <span class="glyphicon glyphicon-user"></span> {{ 'Welcome, %userName%'|trans({'%userName%': app.user.userName}) }} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('summary') }}">{{ 'View previous commands'|trans }}</a></li>
-                                    <li><a href="{{ path('userSettings') }}">{{ 'Update/Edit informations'|trans }}</a></li>
+                                    <li><a href="{{ path('userSettings') }}">{{ 'View/Edit informations'|trans }}</a></li>
                                     <li><a href="{{ path('logout') }}">{{ 'Sign out'|trans }}</a></li>
                                 </ul>
                                 
@@ -71,6 +84,7 @@
 
         
         <div id="content">{% block content %}{% endblock %}</div>
+        </body>
         <footer>
             <p> {{ 'This site have been realised by Quentin Tournier'|trans }}</p>
             <script src="{{ app.request.basepath }}/lib/jquery/jquery.min.js"></script>
@@ -83,8 +97,8 @@
                     success: function(result){
                         var innerHtml = '';
                         for (i = 0; i < result.length; i++) {
-                            var newRow = '<li class="hidden dropdownLi">'.concat('<a href="__CATEGORYLINK__" >',result[i], '</a></li>');
-                            var url = "{{path('categorie',{ 'categorie': '__RESULT__'}) }}".replace('__RESULT__',result[i]);
+                            var newRow = '<li class="hidden dropdownLi">'.concat('<a href="__CATEGORYLINK__" >',result[i]['name'], '</a></li>');
+                            var url = "{{path('categorie',{ 'categorie': '__RESULT__'}) }}".replace('__RESULT__',result[i]['id']);
                             innerHtml += newRow.replace('__CATEGORYLINK__',url);                            
                         }
                         $('#categories').prepend(innerHtml);
@@ -107,5 +121,4 @@
         </script>
         </footer>
     </div>
-</body>
 </html>

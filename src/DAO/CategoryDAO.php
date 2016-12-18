@@ -6,9 +6,9 @@ use LudusVisualis\Domain\Category;
 
 class CategoryDAO extends DAO
 {
-    public function getAllCategories(){
-        $stmt = $this->getDb()->prepare('SELECT * FROM Categories');
-        $stmt->execute();
+    public function getAllCategories($language){
+        $stmt = $this->getDb()->prepare('SELECT * FROM Categories_has_translation WHERE cat_language = :language');
+        $stmt->execute(['language' => $language]);
         $rows = $stmt->fetchAll();
         $categories = [];
         foreach($rows as $row){
@@ -20,7 +20,8 @@ class CategoryDAO extends DAO
     
      protected function buildDomainObject(array $row) {
         $category = new Category();
-        $category->setName($row['category_name']);
+        $category->setName($row['cat_name'])
+            ->setId($row['cat_id']);
         return $category;
     }
 }

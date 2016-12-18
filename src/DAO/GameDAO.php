@@ -14,28 +14,17 @@ class GameDAO extends DAO
      *
      * @return array A list of all games.
      */
-    public function findAll() {
+    public function findAll($language) {
         $sql = "select * from VideoGames order by game_id desc";
         $result = $this->getDb()->fetchAll($sql);
         // Convert query result to an array of domain objects
         $games = array();
         foreach ($result as $row) {
             $GameId = $row['game_id'];
-            $games[$GameId] = $this->buildDomainObject($row);
+            $games[$GameId] = $this->buildDomainObject($row['game_id'],$language);
         }
         return $games;
     }
-    
-    /** return all the categories
-    *
-    **/
-   public function findAllCategories() {
-    $sql = "select game_type from VideoGames ";
-    $result = $this->getDb()->fetchAll($sql);
-
-       return $result;
-
-   }
     
      /**
     * removes one from the number of game available
@@ -63,13 +52,13 @@ class GameDAO extends DAO
 /**
 returns all the games from a categorie
 **/
-    public function findAllFromCategorie($categorie) {
+    public function findAllFromCategorie($categorie, $language) {
         $sql = "select * from VideoGames where game_type=?";
         $result= $this->getDb()->fetchAll($sql, array($categorie));
         $games = array();
         foreach ($result as $row) {
             $GameId = $row['game_id'];
-            $games[$GameId] = $this->buildDomainObject($row);
+            $games[$GameId] = $this->buildDomainObject($row['game_id'], $language);
         }
         return $games;
         }
@@ -80,11 +69,11 @@ returns all the games from a categorie
      * @param integer $id The article id.
 
      */
-    public function find($id) {
+    public function find($id, $language) {
         $sql = "select * from VideoGames where game_id=?";
         $row = $this->getDb()->fetchAssoc($sql, array($id));
         if ($row)
-            return $this->buildDomainObject($row);
+            return $this->buildDomainObject($row['game_id'], $language);
         else
             throw new \Exception("No article matching id " . $id);
     }
@@ -95,14 +84,14 @@ returns all the games from a categorie
     * @return, an array of game object
     */
     
-    public function getAllGamesFromConsole($consoleId)
+    public function getAllGamesFromConsole($consoleId, $language)
     {
-        $stmt = $this->getDb()->prepare('SELECT game_id FROM GameHasConsole WHERE console_id = :consoleId');
+        $stmt = $this->getDb()->prepare('SELECT game_id FROM Game_has_console WHERE console_id = :consoleId');
         $stmt->execute(['consoleId'=> $consoleId]);
         $rows = $stmt->fetchAll();
         $games = [];
         foreach($rows as $row){
-            $games[] =  $this->find($row['game_id']);
+            $games[] =  $this->find($row['game_id'], $language);
         }
         return $games;
     }
@@ -114,7 +103,16 @@ returns all the games from a categorie
      * @param array $row The DB row containing Game data.
      * @return \LudusVisualis\Domain\Game
      */
-    protected function buildDomainObject(array $row) {
+    protected function buildDomainObject($id, $language) {
+        $stmt = $this->getDb()->prepare("
+            SELECT * 
+            FROM VideoGames vg 
+            INNER JOIN VideoGames_has_translation vght 
+            ON vg.game_id = vght.game_id 
+            WHERE vg.game_id = :gameId AND vght.language = :language");
+        $stmt->execute(['gameId' => $id, 'language' => $language]);
+        $row = $stmt->fetch();
+
         $game = new Game();
         $game->setId($row['game_id']);
         $game->setName($row['game_name']);

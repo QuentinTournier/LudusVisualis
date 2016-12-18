@@ -7,9 +7,13 @@ class ConsoleDAO extends DAO
     * 
     * @return returns all the different consoles, as an array of object
     */
-    public function findAllConsoles(){
-        $stmt = $this->getDb()->prepare('SELECT * FROM Console');
-        $stmt->execute();
+    public function findAllConsoles($language){
+        $stmt = $this->getDb()->prepare('SELECT * 
+            FROM Console c 
+            INNER JOIN Console_has_translation cht 
+            ON c.id=cht.console_id 
+            WHERE cht.language = :language');
+        $stmt->execute(['language' => $language]);
         $rows = $stmt->fetchAll();
         $consoles = [];
         foreach($rows as $row){
@@ -22,9 +26,13 @@ class ConsoleDAO extends DAO
     * 
     * @return returns the console
     */
-    public function findConsole($consoleId){
-        $stmt = $this->getDb()->prepare('SELECT * FROM Console WHERE id = :id');
-        $stmt->execute(['id'=>$consoleId]);
+    public function findConsole($consoleId, $language){
+        $stmt = $this->getDb()->prepare('SELECT * 
+            FROM Console c 
+            INNER JOIN Console_has_translation cht 
+            ON c.id=cht.console_id 
+            WHERE cht.language = :language AND c.id = :id ');
+        $stmt->execute(['language' => $language, 'id' => $consoleId]);
         $rows = $stmt->fetchAll();
 
         return $this->buildDomainObject($rows[0]);

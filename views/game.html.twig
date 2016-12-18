@@ -14,10 +14,7 @@
                     {% else %}
                         <a id="addToBasket" href="{{ path('add_product_basket', {'id' : game.id}) }}"><span class="glyphicon glyphicon-plus"></span> {{ 'Add to basket'|trans }}</a>
                     {% endif %}
-                {% else %}
-                    <a href="{{ path('login') }} ">{{ 'Login here'|trans }}</a> to add something to your basket.
-                {% endif %}
-            </div>
+                
             <div class="comments">
                 <form action="{{ url('rateCommentGame',{gameId : game.id}) }}" method="post">
                     <div id="star-rating" class="col-md-12"> 
@@ -27,7 +24,7 @@
                         <span class="glyphicon glyphicon-star"></span>
                         <span class="glyphicon glyphicon-star"></span>
                         <input type="hidden" id="note" value="-1" name="rating">
-                        <button id="resetRating" class="hidden btn btn-default" style="margin-left :1em">{{ 'resetRating'|trans }}</button>
+                        <button id="resetRating" class="hidden btn btn-default" style="margin-left :1em">{{ 'Reset rating'|trans }}</button>
                     </div>
                     <textarea rows="2" class="col-md-11 textComment" name="comment" placeholder="{{ 'Add a comment'|trans }}"></textarea>
                     <button id="buttonComment" class="btn btn-default col-md-1" type="submit" value="">
@@ -49,6 +46,10 @@
                     </div>
                 {% endfor %}
             </div>
+            {% else %}
+                    <a href="{{ path('login') }} ">{{ 'Login here'|trans }}</a> {{ 'to add this game to your cart or comment'|trans }}
+                {% endif %}
+            </div>
 
 
         </div> 
@@ -56,12 +57,12 @@
             
             <h2>{{ game.name }}</h2>
             <p>{{ game.descriptionLong }}</p>
-            <p>{{'Price \:  %price% €'|trans({'%price%' : game.price})}}</p>
-            <p>{{'Release Date \:  %releaseDate%'|trans({'%releaseDate%' : game.year})}}</p>
-            <p>{{'Category \:  %category%'|trans({'%category%' : game.type})}}</p>
+            <p>{{'Price : %price% €'|trans({'%price%' : game.price})}}</p>
+            <p>{{'Release Date : %releaseDate%'|trans({'%releaseDate%' : game.year})}}</p>
+            <p>{{'Category \: %category%'|trans({'%category%' : game.type})}}</p>
             {% set gameNumber = game.number%}
             <p >{% transchoice gameNumber %}
-                    {0} There are no copies Left|{1} There is one copy left|]1,Inf[ There are %gameNumber% copies left
+                    {0} There are no copies left|{1} There is one copy left|]1,Inf[ There are %gameNumber% copies left
                 {% endtranschoice %}
             </p>
 

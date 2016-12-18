@@ -1,6 +1,9 @@
 <?php
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\ArrayLoader;
+use LudusVisualis\Translations\TranslationFr;
 // Register global error and exception handlers
 ErrorHandler::register();
 ExceptionHandler::register();
@@ -14,8 +17,13 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app['twig'] = $app->share($app->extend('twig', function(Twig_Environment $twig, $app) {
     $twig->addExtension(new Twig_Extensions_Extension_Text());
+    $twig->addGlobal("AVAILABLE_LANGUAGES", ["fr_FR"=>['name'=>'Français', 'twoLetters' => 'fr'],
+                                             "en_GB" =>['name'=>'English', 'twoLetters' => 'en']]);
+    $twig->addGlobal('IMAGES', '/LudusVisualis/images');
     return $twig;
 }));
+
+
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
@@ -39,7 +47,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     
 ));
 $app->register(new Silex\Provider\FormServiceProvider());
-$app->register(new Silex\Provider\TranslationServiceProvider());
+$app->register(new Silex\Provider\TranslationServiceProvider(), array(
+    'locale_fallbacks' => array('fr'),
+));
 
 $app['dao.user'] = $app->share(function ($app) {
     return new LudusVisualis\DAO\UserDAO($app['db']);
@@ -61,6 +71,23 @@ $app['dao.console'] = $app->share(function ($app) {
 $app['dao.comment'] = $app->share(function ($app) {
     return new LudusVisualis\DAO\CommentDAO($app['db']);
 });
+$app['session']->set('DefaultLanguage','fr_FR');
+
+//traduction to FR
+// @TODO : use namespace instead
+set_include_path(__DIR__);
+require_once('\\Ressources\\Translations\\TranslationFr.php');
+$translation = new TranslationFr();
+$app['translator']->addLoader('array', new ArrayLoader());
+$app['translator']->addResource('array', $translation->getTranslation(), 'fr_FR');
 
 
 define('IMAGES', '/LudusVisualis/images');
+
+if($app['session']->get('UserLanguage') == null){
+    $app['translator']->setLocale($app['session']->get('DefaultLanguage'));
+}
+else{
+    $app['translator']->setLocale($app['session']->get('UserLanguage'));
+}
+define('_LOCALE', $app['translator']->getLocale());

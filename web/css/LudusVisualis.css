@@ -41,11 +41,15 @@ footer {
 }
 
 #dropdownJs li{
-    background-color: lightblue;
+    background-color: #d9edf7;
     border-color: grey;
     border-style: dotted;
     position: relative;
     z-index: +1;
+}
+
+#dropdownJs li:not(:first-child){
+    border-top-style: hidden;
 }
 
 #dropdownJs li:hover{
